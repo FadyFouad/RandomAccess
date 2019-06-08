@@ -14,6 +14,11 @@ public class Locations implements Map<Integer, Location> {
 
         try (RandomAccessFile randomAccessFile = new RandomAccessFile("locations_rand.dat","rwd")) {
             randomAccessFile.writeInt(locationMap.size());
+            int indexSize = locationMap.size()*3*Integer.BYTES;
+            int locStart = (int)(indexSize+randomAccessFile.getFilePointer()+Integer.BYTES);
+            randomAccessFile.writeInt(locStart);
+            long indexStart = randomAccessFile.getFilePointer();
+
         }
     }
 
