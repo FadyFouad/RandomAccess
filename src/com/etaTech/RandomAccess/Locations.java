@@ -1,4 +1,4 @@
-package com.etaTech.InputOutput;
+package com.etaTech.RandomAccess;
 
 import java.io.*;
 import java.util.*;
@@ -7,7 +7,8 @@ import java.util.*;
  *** Created by Fady Fouad on 6/5/2019 at 12:32.***
  ***************************************************/
 public class Locations implements Map<Integer, Location> {
-    private static Map<Integer, Location> locationMap = new HashMap<>();
+    private static Map<Integer, Location> locationMap = new LinkedHashMap<>();
+    private static Map<Integer, IndexRecord> index = new LinkedHashMap<>();
 
     public static void main(String[] args) throws IOException {
 
@@ -18,7 +19,34 @@ public class Locations implements Map<Integer, Location> {
             int locStart = (int)(indexSize+randomAccessFile.getFilePointer()+Integer.BYTES);
             randomAccessFile.writeInt(locStart);
             long indexStart = randomAccessFile.getFilePointer();
+            int startPointer = locStart;
+            randomAccessFile.seek(startPointer);
+            for (Location location :
+                    locationMap.values()) {
+                randomAccessFile.writeInt(location.getLocationID());
+                randomAccessFile.writeUTF(location.getDesc());
+                StringBuilder stringBuilder = new StringBuilder();
+                for (String dir :
+                        location.getExits().keySet()) {
+                    if (!dir.equalsIgnoreCase("Q")){
+                        stringBuilder.append(",");
+                        stringBuilder.append(location.getExits().get(dir));
+                        stringBuilder.append(",");
+                    }
+                }
+                randomAccessFile.writeUTF(stringBuilder.toString());
+                IndexRecord indexRecord = new IndexRecord(startPointer, (int) (randomAccessFile.getFilePointer()-startPointer));
+                index.put(location.getLocationID(),indexRecord);
+                startPointer = (int) randomAccessFile.getFilePointer();
 
+            }
+            randomAccessFile.seek(indexSize);
+            for (Integer locationID :
+                    index.keySet()) {
+                randomAccessFile.writeInt(locationID);
+                randomAccessFile.writeInt(index.get(locationID).getStartBytes());
+                randomAccessFile.writeInt(index.get(locationID).getLength());
+            }
         }
     }
 

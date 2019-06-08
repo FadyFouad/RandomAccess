@@ -1,4 +1,4 @@
-package com.etaTech.InputOutput;
+package com.etaTech.RandomAccess;
 
 import java.util.HashMap;
 import java.util.Map;
