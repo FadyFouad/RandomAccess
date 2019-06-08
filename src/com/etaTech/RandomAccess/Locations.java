@@ -9,6 +9,7 @@ import java.util.*;
 public class Locations implements Map<Integer, Location> {
     private static Map<Integer, Location> locationMap = new LinkedHashMap<>();
     private static Map<Integer, IndexRecord> index = new LinkedHashMap<>();
+    private static RandomAccessFile accessFile;
 
     public static void main(String[] args) throws IOException {
 
@@ -51,53 +52,21 @@ public class Locations implements Map<Integer, Location> {
     }
 
     static {
-        try (ObjectInputStream locFile = new ObjectInputStream(new BufferedInputStream(new FileInputStream("locations.dat")))) {
-            boolean eof = false;
-            while (!eof) {
-                try {
-                    Location location = (Location) locFile.readObject();
-                    System.out.println("Read location " + location.getLocationID() + " : " + location.getDesc());
-                    System.out.println("Found " + location.getExits().size() + " exits");
-                    locationMap.put(location.getLocationID(), location);
-                } catch (EOFException e) {
-                    eof = true;
-                }
+        try {
+            accessFile = new RandomAccessFile("locations_rand.dat","rwd");
+            int numLoc= accessFile.readInt();
+            long locationStartPoint = accessFile.readInt();
+            while (accessFile.getFilePointer()<locationStartPoint){
+                int locationID = accessFile.readInt();
+                int locationStart = accessFile.readInt();
+                int locationLegnth = accessFile.readInt();
+
+                IndexRecord record = new IndexRecord(locationStart,locationLegnth);
+                index.put(locationID,record);
             }
-        } catch (IOException e) {
+
+        }catch (IOException e){
             System.out.println(e.getMessage());
-        }catch (ClassNotFoundException e){
-            e.printStackTrace();
-        }
-
-        try (Scanner scanner = new Scanner(new BufferedReader(new FileReader("locations_big.txt")))) {
-            scanner.useDelimiter(",");
-            while (scanner.hasNextLine()) {
-                int loc = scanner.nextInt();
-                scanner.skip(scanner.delimiter());
-                String description = scanner.nextLine();
-                System.out.println("Imported loc: " + loc + ": " + description);
-                Map<String, Integer> tempExit = new HashMap<>();
-                locationMap.put(loc, new Location(loc, description, tempExit));
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try (BufferedReader dirFile = new BufferedReader(new FileReader("directions_big.txt"))) {
-            String input;
-            while ((input = dirFile.readLine()) != null) {
-                String[] data = input.split(",");
-                int loc = Integer.parseInt(data[0]);
-                String direction = data[1];
-                int destination = Integer.parseInt(data[2]);
-
-                System.out.println(loc + ": " + direction + ": " + destination);
-                Location location = locationMap.get(loc);
-                location.addExit(direction, destination);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
     @Override
