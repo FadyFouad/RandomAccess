@@ -17,7 +17,6 @@ public class Locations implements Map<Integer, Location> {
         }
     }
 
-
     static {
         try (ObjectInputStream locFile = new ObjectInputStream(new BufferedInputStream(new FileInputStream("locations.dat")))) {
             boolean eof = false;
@@ -52,7 +51,6 @@ public class Locations implements Map<Integer, Location> {
             e.printStackTrace();
         }
 
-        // Now read the exits
         try (BufferedReader dirFile = new BufferedReader(new FileReader("directions_big.txt"))) {
             String input;
             while ((input = dirFile.readLine()) != null) {
@@ -69,7 +67,6 @@ public class Locations implements Map<Integer, Location> {
             e.printStackTrace();
         }
     }
-
     @Override
     public int size() {
         return locationMap.size();
