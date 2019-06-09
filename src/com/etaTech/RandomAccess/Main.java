@@ -30,11 +30,10 @@ public class Main {
             if (currentLocaction.getLocationID() == 0) {
                 break;
             }
-            Map<String, Integer> exits = new HashMap(locationMap.get(location).getExits());
-
+            Map<String, Integer> exits = currentLocaction.getExits();
             for (String exit :
                     exits.keySet()) {
-                System.out.println(exit + " -> " + " " + locationMap.get(exits.get(exit)).getDesc());
+//                System.out.println(exit + " -> " + " " + locationMap.get(exits.get(exit)).getDesc());
             }
             String dir = scanner.nextLine().toUpperCase();
             if (dir.length()>1){
