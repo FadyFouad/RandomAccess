@@ -30,7 +30,12 @@ public class Location implements Serializable {
     public Location(int locationID, String desc, Map<String, Integer> exits) {
         this.locationID = locationID;
         this.desc = desc;
-        this.exits = new HashMap<>(exits);
+        if(exits != null) {
+            this.exits = new HashMap<>(exits);
+        } else {
+            this.exits = new HashMap<>();
+        }
+
         this.exits.put("Q", 0);
     }
 

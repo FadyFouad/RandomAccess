@@ -56,6 +56,7 @@ public class Main {
                 System.out.println("Location Not Available");
                 break;
             }
+        locationMap.close();
         }
 
     }
