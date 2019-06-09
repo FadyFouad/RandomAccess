@@ -1,5 +1,6 @@
 package com.etaTech.RandomAccess;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -10,7 +11,7 @@ import java.util.Scanner;
 public class Main {
     private static Locations locationMap  = new Locations();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         System.out.println("\n============================= Adventure =========================\n");
         Scanner scanner = new Scanner(System.in);
 
@@ -23,9 +24,10 @@ public class Main {
         vocap.put("NORTH","N");
 
         int location = 1;
+        Location currentLocaction = locationMap.getLocation(location);
         while (true) {
-            System.out.println(locationMap.get(location).getDesc());
-            if (location == 0) {
+            System.out.println(currentLocaction.getDesc());
+            if (currentLocaction.getLocationID() == 0) {
                 break;
             }
             Map<String, Integer> exits = new HashMap(locationMap.get(location).getExits());
@@ -46,11 +48,11 @@ public class Main {
                 }
             }
             if (exits.containsKey(dir)) {
-                location = exits.get(dir);
+                currentLocaction = locationMap.getLocation(currentLocaction.getExits().get(dir));
             } else {
                 System.out.println("You Cannt Go There");
             }
-            if (!locationMap.containsKey(location)) {
+            if (!locationMap.containsKey(dir)) {
                 System.out.println("Location Not Available");
                 break;
             }
